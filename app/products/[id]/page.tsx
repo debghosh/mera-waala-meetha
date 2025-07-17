@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -23,12 +23,13 @@ interface Product {
 }
 
 interface ProductDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+  const resolvedParams = use(params)
   const { data: session } = useSession()
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
@@ -38,11 +39,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   useEffect(() => {
     fetchProduct()
-  }, [params.id])
+  }, [resolvedParams.id])
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`/api/products/${params.id}`)
+      const response = await fetch(`/api/products/${resolvedParams.id}`)
       if (response.ok) {
         const data = await response.json()
         setProduct(data)
@@ -102,29 +103,42 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     }
     
     // TODO: Implement cart functionality
-    alert(`Added ${quantity}kg of ${product?.name} to cart!\n\nTotal: ${formatPrice(getTotalPrice())}\n\n(Cart functionality coming soon!)`)
+    alert(`✨ Added ${quantity}kg of ${product?.name} to your cart!\n\n🛒 Total: ${formatPrice(getTotalPrice())}\n\n(Cart functionality coming soon!)`)
   }
 
   if (loading) {
     return (
       <div style={{
         minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f9fafb'
+        justifyContent: 'center'
       }}>
-        <div style={{ textAlign: 'center' }}>
+        <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          padding: '3rem',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1)',
+          textAlign: 'center'
+        }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #f3f3f3',
-            borderTop: '4px solid #f97316',
+            width: '60px',
+            height: '60px',
+            border: '4px solid #f3f4f6',
+            borderTop: '4px solid #ff6b35',
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
+            margin: '0 auto 1.5rem'
           }}></div>
-          <p style={{ color: '#6b7280' }}>Loading product details...</p>
+          <p style={{ 
+            color: '#374151',
+            fontSize: '1.1rem',
+            fontWeight: '500'
+          }}>
+            Loading sweet details...
+          </p>
         </div>
       </div>
     )
@@ -134,43 +148,62 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     return (
       <div style={{
         minHeight: '100vh',
+        background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f9fafb'
+        justifyContent: 'center'
       }}>
         <div style={{
-          backgroundColor: 'white',
-          padding: '3rem',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-          textAlign: 'center'
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          padding: '4rem',
+          borderRadius: '24px',
+          boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1)',
+          textAlign: 'center',
+          maxWidth: '500px'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>😕</div>
+          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>😕</div>
           <h2 style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
+            fontSize: '2rem',
+            fontWeight: '700',
             color: '#1f2937',
-            marginBottom: '0.5rem'
+            marginBottom: '1rem'
           }}>
-            Product Not Found
+            Sweet Not Found
           </h2>
-          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-            {error || 'The product you are looking for does not exist.'}
+          <p style={{ 
+            color: '#64748b', 
+            marginBottom: '2rem',
+            fontSize: '1.1rem'
+          }}>
+            {error || 'The delicious treat you are looking for does not exist.'}
           </p>
           <Link
             href="/products"
             style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: '#f97316',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '1rem 2rem',
+              background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
               color: 'white',
               textDecoration: 'none',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: '500'
+              borderRadius: '50px',
+              fontSize: '1rem',
+              fontWeight: '600',
+              boxShadow: '0 10px 25px rgba(255, 107, 53, 0.4)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-3px)'
+              e.currentTarget.style.boxShadow = '0 20px 40px rgba(255, 107, 53, 0.5)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 10px 25px rgba(255, 107, 53, 0.4)'
             }}
           >
-            Browse All Products
+            🛍️ Browse All Sweets
           </Link>
         </div>
       </div>
@@ -178,53 +211,104 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-      {/* Header */}
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+      position: 'relative'
+    }}>
+      {/* Floating Header */}
       <header style={{
-        backgroundColor: 'white',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        borderBottom: '1px solid #e5e7eb'
+        position: 'sticky',
+        top: '1rem',
+        zIndex: 50,
+        margin: '1rem 2rem 0',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
       }}>
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
-          padding: '1rem 2rem',
+          padding: '1.5rem 2rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
           <Link href="/products" style={{ textDecoration: 'none' }}>
-            <h1 style={{
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              color: '#f97316',
-              margin: 0
-            }}>
-              Mera Wala Meetha
-            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.25rem'
+              }}>
+                🍯
+              </div>
+              <h1 style={{
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                margin: 0
+              }}>
+                Mera Wala Meetha
+              </h1>
+            </div>
           </Link>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Link
               href="/products"
               style={{
-                color: '#6b7280',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                color: '#64748b',
                 textDecoration: 'none',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                padding: '0.5rem 1rem',
+                borderRadius: '50px',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 107, 53, 0.1)'
+                e.currentTarget.style.color = '#ff6b35'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = '#64748b'
               }}
             >
-              ← Back to Products
+              ← Back to Collection
             </Link>
             {session && (
               <Link 
                 href="/dashboard"
                 style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#f97316',
+                  padding: '0.75rem 1.5rem',
+                  background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
                   color: 'white',
                   textDecoration: 'none',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem'
+                  borderRadius: '50px',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  boxShadow: '0 10px 15px -3px rgba(255, 107, 53, 0.3)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(255, 107, 53, 0.4)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(255, 107, 53, 0.3)'
                 }}
               >
                 Dashboard
@@ -235,65 +319,84 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       </header>
 
       {/* Main Content */}
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '3rem 2rem 4rem' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(300px, 1fr) 1fr',
-          gap: '3rem',
+          gridTemplateColumns: 'minmax(400px, 1fr) 1fr',
+          gap: '4rem',
           alignItems: 'start'
         }}>
           {/* Product Image */}
           <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            overflow: 'hidden'
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            position: 'sticky',
+            top: '8rem'
           }}>
             <div style={{
-              height: '400px',
-              backgroundColor: '#f3f4f6',
-              backgroundImage: product.imageUrl ? `url(${product.imageUrl})` : 'none',
+              height: '500px',
+              background: product.imageUrl 
+                ? `linear-gradient(45deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1)), url(${product.imageUrl})`
+                : 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              position: 'relative'
             }}>
               {!product.imageUrl && (
-                <div style={{ fontSize: '5rem' }}>🍯</div>
+                <div style={{ 
+                  fontSize: '6rem',
+                  filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1))'
+                }}>
+                  🍯
+                </div>
               )}
+              
+              {/* Category Badge */}
+              <div style={{
+                position: 'absolute',
+                top: '1.5rem',
+                right: '1.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '50px',
+                fontSize: '0.875rem',
+                fontWeight: '700',
+                color: '#ff6b35',
+                border: '1px solid rgba(255, 107, 53, 0.2)',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+              }}>
+                {formatCategory(product.category)}
+              </div>
             </div>
           </div>
 
           {/* Product Details */}
           <div>
+            {/* Product Header */}
             <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-              marginBottom: '1.5rem'
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              padding: '3rem',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+              marginBottom: '2rem',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
-              {/* Category Badge */}
-              <div style={{ marginBottom: '1rem' }}>
-                <span style={{
-                  backgroundColor: '#fef3e2',
-                  color: '#ea580c',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  fontWeight: '500'
-                }}>
-                  {formatCategory(product.category)}
-                </span>
-              </div>
-
               {/* Product Name */}
               <h1 style={{
-                fontSize: '2.5rem',
-                fontWeight: 'bold',
+                fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                fontWeight: '700',
                 color: '#1f2937',
-                marginBottom: '1rem'
+                marginBottom: '1rem',
+                lineHeight: '1.2'
               }}>
                 {product.name}
               </h1>
@@ -302,19 +405,26 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <div style={{
                 display: 'flex',
                 alignItems: 'baseline',
-                gap: '0.5rem',
-                marginBottom: '1.5rem'
+                gap: '0.75rem',
+                marginBottom: '1.5rem',
+                padding: '1rem',
+                background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.05))',
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 107, 53, 0.2)'
               }}>
                 <span style={{
-                  fontSize: '3rem',
-                  fontWeight: 'bold',
-                  color: '#f97316'
+                  fontSize: '2rem',
+                  fontWeight: '800',
+                  background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
                 }}>
                   {formatPrice(product.price)}
                 </span>
                 <span style={{
-                  fontSize: '1.25rem',
-                  color: '#6b7280'
+                  fontSize: '1rem',
+                  color: '#64748b',
+                  fontWeight: '600'
                 }}>
                   per kg
                 </span>
@@ -323,64 +433,106 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               {/* Description */}
               <p style={{
                 color: '#4b5563',
-                fontSize: '1.1rem',
+                fontSize: '1rem',
                 lineHeight: '1.6',
-                marginBottom: '2rem'
+                marginBottom: '1.5rem'
               }}>
                 {product.description}
               </p>
 
-              {/* Order Limits */}
+              {/* Order Information */}
               <div style={{
-                backgroundColor: '#fef3e2',
-                padding: '1rem',
-                borderRadius: '6px',
-                marginBottom: '2rem'
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05))',
+                padding: '1.5rem',
+                borderRadius: '20px',
+                marginBottom: '2rem',
+                border: '1px solid rgba(16, 185, 129, 0.2)'
               }}>
                 <h3 style={{
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  color: '#ea580c',
-                  marginBottom: '0.5rem'
+                  fontSize: '1.125rem',
+                  fontWeight: '700',
+                  color: '#047857',
+                  marginBottom: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
                 }}>
-                  Order Information
+                  📋 Order Information
                 </h3>
-                <p style={{
-                  color: '#9a3412',
-                  fontSize: '0.875rem',
-                  margin: 0
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem',
+                  fontSize: '0.875rem'
                 }}>
-                  Minimum order: {product.minOrderKg}kg
-                  {product.maxOrderKg && ` • Maximum order: ${product.maxOrderKg}kg`}
-                </p>
+                  <div>
+                    <span style={{ color: '#047857', fontWeight: '600' }}>Minimum Order:</span>
+                    <div style={{ color: '#1f2937', fontWeight: '700', fontSize: '1rem' }}>
+                      {product.minOrderKg}kg
+                    </div>
+                  </div>
+                  {product.maxOrderKg && (
+                    <div>
+                      <span style={{ color: '#047857', fontWeight: '600' }}>Maximum Order:</span>
+                      <div style={{ color: '#1f2937', fontWeight: '700', fontSize: '1rem' }}>
+                        {product.maxOrderKg}kg
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
 
+            {/* Quantity & Add to Cart */}
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              padding: '3rem',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+              marginBottom: '2rem',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
               {/* Quantity Selector */}
               <div style={{ marginBottom: '2rem' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: '#374151'
+                  fontSize: '1.125rem',
+                  fontWeight: '700',
+                  marginBottom: '1rem',
+                  color: '#1f2937'
                 }}>
-                  Quantity (kg)
+                  ⚖️ Select Quantity (kg)
                 </label>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '1rem'
+                  gap: '1rem',
+                  padding: '1rem',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '20px'
                 }}>
                   <button
                     onClick={() => handleQuantityChange(quantity - 0.5)}
                     style={{
-                      width: '40px',
-                      height: '40px',
-                      backgroundColor: '#f3f4f6',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '1.25rem',
-                      cursor: 'pointer'
+                      width: '50px',
+                      height: '50px',
+                      backgroundColor: 'white',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
+                      fontSize: '1.5rem',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      color: '#64748b',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35'
+                      e.currentTarget.style.color = '#ff6b35'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#e2e8f0'
+                      e.currentTarget.style.color = '#64748b'
                     }}
                   >
                     -
@@ -393,34 +545,62 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                     max={product.maxOrderKg}
                     step="0.5"
                     style={{
-                      width: '80px',
-                      padding: '0.75rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
+                      width: '100px',
+                      padding: '1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
                       textAlign: 'center',
-                      fontSize: '1rem'
+                      fontSize: '1.25rem',
+                      fontWeight: '700',
+                      backgroundColor: 'white',
+                      outline: 'none'
                     }}
                   />
                   <button
                     onClick={() => handleQuantityChange(quantity + 0.5)}
                     style={{
-                      width: '40px',
-                      height: '40px',
-                      backgroundColor: '#f3f4f6',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '1.25rem',
-                      cursor: 'pointer'
+                      width: '50px',
+                      height: '50px',
+                      backgroundColor: 'white',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
+                      fontSize: '1.5rem',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      color: '#64748b',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#ff6b35'
+                      e.currentTarget.style.color = '#ff6b35'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#e2e8f0'
+                      e.currentTarget.style.color = '#64748b'
                     }}
                   >
                     +
                   </button>
                   <div style={{
-                    fontSize: '1.25rem',
-                    fontWeight: '600',
-                    color: '#f97316'
+                    marginLeft: 'auto',
+                    textAlign: 'right'
                   }}>
-                    Total: {formatPrice(getTotalPrice())}
+                    <div style={{
+                      fontSize: '0.875rem',
+                      color: '#64748b',
+                      fontWeight: '600'
+                    }}>
+                      Total Amount
+                    </div>
+                    <div style={{
+                      fontSize: '2rem',
+                      fontWeight: '900',
+                      background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
+                      {formatPrice(getTotalPrice())}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -430,79 +610,121 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 onClick={handleAddToCart}
                 style={{
                   width: '100%',
-                  padding: '1rem',
-                  backgroundColor: '#f97316',
+                  padding: '1.5rem',
+                  background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '1.1rem',
-                  fontWeight: '600',
+                  borderRadius: '20px',
+                  fontSize: '1.25rem',
+                  fontWeight: '700',
                   cursor: 'pointer',
-                  marginBottom: '1rem'
+                  boxShadow: '0 10px 25px rgba(255, 107, 53, 0.4)',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.75rem'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px)'
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(255, 107, 53, 0.5)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 10px 25px rgba(255, 107, 53, 0.4)'
                 }}
               >
+                <span style={{ fontSize: '1.5rem' }}>🛒</span>
                 Add to Cart
               </button>
 
               {!session && (
                 <p style={{
-                  color: '#6b7280',
+                  color: '#64748b',
                   fontSize: '0.875rem',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  marginTop: '1rem',
+                  padding: '1rem',
+                  backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                  borderRadius: '12px'
                 }}>
-                  <Link href="/login" style={{ color: '#f97316' }}>Sign in</Link> to place orders
+                  <Link href="/login" style={{ color: '#ff6b35', fontWeight: '600' }}>
+                    Sign in
+                  </Link> to place orders and track deliveries
                 </p>
               )}
             </div>
 
             {/* Vendor & Details */}
             <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              padding: '3rem',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
               <h3 style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
+                fontSize: '1.5rem',
+                fontWeight: '700',
                 color: '#1f2937',
-                marginBottom: '1rem'
+                marginBottom: '2rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
               }}>
-                Product Details
+                📍 Product Details
               </h3>
 
               <div style={{
                 display: 'grid',
-                gap: '0.75rem'
+                gap: '1.5rem'
               }}>
                 <div style={{
                   display: 'flex',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '1rem',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '12px'
                 }}>
-                  <span style={{ color: '#6b7280' }}>Vendor:</span>
-                  <span style={{ fontWeight: '500' }}>{product.vendorName}</span>
+                  <span style={{ color: '#64748b', fontWeight: '600' }}>👨‍🍳 Artisan:</span>
+                  <span style={{ fontWeight: '700', color: '#1f2937' }}>{product.vendorName}</span>
                 </div>
                 <div style={{
                   display: 'flex',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '1rem',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '12px'
                 }}>
-                  <span style={{ color: '#6b7280' }}>Location:</span>
-                  <span style={{ fontWeight: '500' }}>{product.city}, {product.state}</span>
+                  <span style={{ color: '#64748b', fontWeight: '600' }}>📍 Location:</span>
+                  <span style={{ fontWeight: '700', color: '#1f2937' }}>{product.city}, {product.state}</span>
                 </div>
                 <div style={{
                   display: 'flex',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '1rem',
+                  backgroundColor: '#f8fafc',
+                  borderRadius: '12px'
                 }}>
-                  <span style={{ color: '#6b7280' }}>Category:</span>
-                  <span style={{ fontWeight: '500' }}>{formatCategory(product.category)}</span>
+                  <span style={{ color: '#64748b', fontWeight: '600' }}>🏷️ Category:</span>
+                  <span style={{ fontWeight: '700', color: '#1f2937' }}>{formatCategory(product.category)}</span>
                 </div>
                 {product.occasions.length > 0 && (
                   <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
+                    padding: '1rem',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '12px'
                   }}>
-                    <span style={{ color: '#6b7280' }}>Perfect for:</span>
-                    <span style={{ fontWeight: '500' }}>{formatOccasions(product.occasions)}</span>
+                    <div style={{ color: '#64748b', fontWeight: '600', marginBottom: '0.5rem' }}>
+                      🎉 Perfect for:
+                    </div>
+                    <div style={{ fontWeight: '700', color: '#1f2937' }}>
+                      {formatOccasions(product.occasions)}
+                    </div>
                   </div>
                 )}
               </div>
