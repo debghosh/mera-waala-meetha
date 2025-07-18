@@ -1,45 +1,24 @@
+import React from 'react';
+import MagicalBowl from '@/components/landing/MagicalBowl';
+
 export default function HomePage() {
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '20px',
-      textAlign: 'center' as const
-    }}>
-      <div style={{
-        background: 'linear-gradient(135deg, #fef3e2 0%, #fed7a1 100%)',
-        borderRadius: '12px',
-        padding: '3rem 2rem',
-        margin: '2rem 0',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: '700',
-          marginBottom: '1rem',
-          color: '#111827'
-        }}>
-          Welcome to Mera Wala Meetha
+    <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-orange-200 flex items-center justify-center p-8">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold text-white mb-8 drop-shadow-lg">
+          Find Your Sweet Side of You
         </h1>
-        <p style={{
-          fontSize: '1.25rem',
-          marginBottom: '2rem',
-          color: '#6b7280'
-        }}>
-          Authentic South Asian Sweets Marketplace
+        
+        <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+          The premium marketplace connecting South Asian communities with authentic bulk sweet vendors.
         </p>
-        <div style={{
-          fontSize: '1.125rem',
-          color: '#374151'
-        }}>
-          <span style={{ fontSize: '2rem', margin: '0 0.5rem' }}>🍯</span>
-          Coming Soon - Charlotte&apos;s Premier Sweet Marketplace
-          <span style={{ fontSize: '2rem', margin: '0 0.5rem' }}>🧁</span>
-        </div>
-        <div style={{ marginTop: '2rem', fontSize: '0.9rem', color: '#9ca3af' }}>
-          🚀 Your marketplace foundation is ready!
-        </div>
+        
+        <MagicalBowl />
+        
+        <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-full text-lg transition-all mt-8">
+          Start Shopping Now
+        </button>
       </div>
-    </div>
-  )
+    </main>
+  );
 }
