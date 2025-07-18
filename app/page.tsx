@@ -1,15 +1,30 @@
-import React from 'react';
+'use client';
+import React, { useState, useRef } from 'react';
 import LandingHeader from '@/components/navigation/LandingHeader';
 import MagicalBowl from '@/components/landing/MagicalBowl';
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState('browse');
+  const tabContentRef = useRef<HTMLElement>(null);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    // Scroll to tab content section smoothly
+    if (tabContentRef.current) {
+      tabContentRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <>
-      {/* Header with Navigation */}
-      <LandingHeader />
+      {/* Header with Navigation - now functional */}
+      <LandingHeader activeTab={activeTab} setActiveTab={handleTabChange} />
 
-      {/* Hero Section - NOT full screen, with proper top margin */}
-      <section className="min-h-[calc(100vh-70px)] mt-[70px] bg-gradient-to-br from-[#FFF8F0]/95 via-[#FFF0D2]/90 to-[#FFE6B4]/95 flex items-center justify-center relative overflow-hidden px-6 py-12">
+      {/* Hero Section */}
+      <section className="min-h-[80vh] mt-[70px] bg-gradient-to-br from-[#FFF8F0]/95 via-[#FFF0D2]/90 to-[#FFE6B4]/95 flex items-center justify-center relative overflow-hidden px-6 py-12">
         
         {/* Background Pattern */}
         <div 
@@ -48,10 +63,16 @@ export default function HomePage() {
               {/* CTA Buttons */}
               <div className="flex gap-4 mb-8 flex-col sm:flex-row"
                    style={{ animation: 'slideInUp 1s ease-out 0.8s both' }}>
-                <button className="px-8 py-4 border-none rounded-full font-semibold cursor-pointer transition-all duration-300 text-white bg-gradient-to-r from-[#D4AF37] to-[#FF6B35] shadow-[0_4px_15px_rgba(212,175,55,0.3)] hover:translate-y-[-2px] hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)] text-lg rounded-[50px]">
+                <button 
+                  onClick={() => handleTabChange('browse')}
+                  className="px-8 py-4 border-none rounded-full font-semibold cursor-pointer transition-all duration-300 text-white bg-gradient-to-r from-[#D4AF37] to-[#FF6B35] shadow-[0_4px_15px_rgba(212,175,55,0.3)] hover:translate-y-[-2px] hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)] text-lg rounded-[50px]"
+                >
                   Start Shopping
                 </button>
-                <button className="px-8 py-4 bg-white text-[#FF6B35] border-2 border-[#FF6B35] rounded-full font-semibold cursor-pointer transition-all duration-300 hover:bg-[#FF6B35] hover:text-white hover:translate-y-[-2px] text-lg">
+                <button 
+                  onClick={() => handleTabChange('vendor')}
+                  className="px-8 py-4 bg-white text-[#FF6B35] border-2 border-[#FF6B35] rounded-full font-semibold cursor-pointer transition-all duration-300 hover:bg-[#FF6B35] hover:text-white hover:translate-y-[-2px] text-lg"
+                >
                   Become a Vendor
                 </button>
               </div>
@@ -78,6 +99,173 @@ export default function HomePage() {
             <div className="relative h-[500px] flex items-center justify-center"
                  style={{ animation: 'slideInRight 1.2s ease-out 0.5s both' }}>
               <MagicalBowl />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tab Content Section */}
+      <section ref={tabContentRef} className="py-16 bg-white">
+        <div className="container max-w-[1400px] mx-auto px-4">
+          <div className="bg-white border rounded-lg overflow-hidden shadow-lg">
+            <div className="p-8 min-h-[500px]">
+              
+              {/* Browse Collection Content */}
+              {activeTab === 'browse' && (
+                <div>
+                  <h2 className="text-3xl font-bold mb-6 text-gray-900">Browse Collection</h2>
+                  <p className="text-lg text-gray-600 mb-8">Explore our curated collection of authentic sweets from verified artisans.</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    {[
+                      { name: 'Bengali Classics', icon: '🍡', count: '85+ varieties' },
+                      { name: 'Gujarati Delights', icon: '🥮', count: '65+ varieties' },
+                      { name: 'Punjabi Specialties', icon: '🧈', count: '45+ varieties' },
+                      { name: 'South Indian', icon: '🥧', count: '55+ varieties' },
+                      { name: 'Festival Specials', icon: '🎉', count: '120+ varieties' },
+                      { name: 'Premium Collection', icon: '👑', count: '35+ varieties' },
+                    ].map((category, index) => (
+                      <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border-2 border-transparent hover:border-orange-500 transition-all duration-300 hover:scale-105 cursor-pointer">
+                        <div className="text-4xl mb-4 font-bold text-orange-500">{category.icon}</div>
+                        <h3 className="font-semibold text-lg mb-2 text-gray-900">{category.name}</h3>
+                        <p className="text-gray-600 text-sm">{category.count}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Our Vendors Content */}
+              {activeTab === 'vendors' && (
+                <div>
+                  <h2 className="text-3xl font-bold mb-6 text-gray-900">Meet Our Verified Vendors</h2>
+                  <p className="text-lg text-gray-600 mb-8">Discover authentic sweet makers who bring generations of tradition and expertise.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[
+                      { name: 'Sweet Kolkata', avatar: '🏪', specialty: 'Bengali Sweets Specialist', rating: 4.9 },
+                      { name: 'Gujarati Sweets House', avatar: '🏛️', specialty: 'Traditional Gujarati Mithai', rating: 4.7 },
+                      { name: 'Punjab Da Dhaba', avatar: '🌾', specialty: 'Authentic Punjabi Sweets', rating: 4.8 }
+                    ].map((vendor, index) => (
+                      <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border hover:border-orange-500 transition-all duration-300">
+                        <div className="text-center mb-4">
+                          <div className="text-4xl mb-2">{vendor.avatar}</div>
+                          <h3 className="text-xl font-bold mb-1">{vendor.name}</h3>
+                          <p className="text-gray-600 text-sm">{vendor.specialty}</p>
+                          <div className="text-yellow-500 mt-2">⭐ {vendor.rating}</div>
+                        </div>
+                        <button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-2 rounded hover:shadow-lg transition-all duration-300">
+                          View Store
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Become a Vendor Content */}
+              {activeTab === 'vendor' && (
+                <div>
+                  <h2 className="text-3xl font-bold mb-6 text-gray-900">Join Our Vendor Network</h2>
+                  <p className="text-lg text-gray-600 mb-8">Grow your sweet business by connecting with thousands of customers across the region.</p>
+                  
+                  <form className="space-y-6 max-w-4xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Business Name *</label>
+                        <input type="text" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" placeholder="Your business name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Owner Name *</label>
+                        <input type="text" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" placeholder="Your full name" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Email *</label>
+                        <input type="email" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" placeholder="your@email.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Phone *</label>
+                        <input type="tel" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" placeholder="+1 (xxx) xxx-xxxx" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Areas Served *</label>
+                        <input type="text" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" placeholder="Charlotte, Matthews, Huntersville..." />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">Years of Experience *</label>
+                        <select className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500">
+                          <option value="">Select experience level</option>
+                          <option value="1-2">1-2 years</option>
+                          <option value="3-5">3-5 years</option>
+                          <option value="6-10">6-10 years</option>
+                          <option value="10+">10+ years</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 mb-2">Business Description *</label>
+                      <textarea className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" rows={4} placeholder="Tell us about your business, what makes your sweets special..."></textarea>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <input type="checkbox" id="terms" className="h-4 w-4 text-orange-500 border-gray-300 rounded" />
+                      <label htmlFor="terms" className="text-sm text-gray-600">
+                        I agree to the <span className="text-orange-500 font-medium">Terms of Service</span> and <span className="text-orange-500 font-medium">Privacy Policy</span>
+                      </label>
+                    </div>
+                    
+                    <button type="submit" className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold px-8 py-3 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
+                      Submit Application
+                    </button>
+                  </form>
+                </div>
+              )}
+              
+              {/* Contact Us Content */}
+              {activeTab === 'contact' && (
+                <div>
+                  <h2 className="text-3xl font-bold mb-6 text-gray-900">Get in Touch</h2>
+                  <p className="text-lg text-gray-600 mb-8">Have questions? We're here to help you find your perfect sweet experience.</p>
+                  
+                  <div className="grid lg:grid-cols-2 gap-12">
+                    <div className="space-y-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-xl">📧</div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2">Email Us</h3>
+                          <p className="text-gray-600">hello@merawawalameetha.com</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-xl">📞</div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2">Call Us</h3>
+                          <p className="text-gray-600">+1 (704) 555-SWEET</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <form className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <input type="text" placeholder="Your Name" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" />
+                          <input type="email" placeholder="Your Email" className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500" />
+                        </div>
+                        <textarea placeholder="How can we help you?" rows={5} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"></textarea>
+                        <button type="submit" className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
+                          Send Message
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
             </div>
           </div>
         </div>
