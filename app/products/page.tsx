@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { useCartStore } from '@/lib/stores/cartStore'
+import CartIcon from '@/components/cart/CartIcon'
 
 interface Product {
   id: string
@@ -190,6 +192,7 @@ export default function ProductsPage() {
           
           {session && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <CartIcon />                                                {/* ADD THIS LINE */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -213,30 +216,7 @@ export default function ProductsPage() {
                   {session.user?.name}
                 </span>
               </div>
-              <Link 
-                href="/dashboard"
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: 'linear-gradient(135deg, #ff6b35, #f7931e)',
-                  color: 'white',
-                  textDecoration: 'none',
-                  borderRadius: '50px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  boxShadow: '0 10px 15px -3px rgba(255, 107, 53, 0.3)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(255, 107, 53, 0.4)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(255, 107, 53, 0.3)'
-                }}
-              >
-                Dashboard
-              </Link>
+              <Link href="/dashboard">Dashboard</Link>
             </div>
           )}
         </div>

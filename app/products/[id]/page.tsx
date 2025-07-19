@@ -4,6 +4,8 @@ import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useCartStore } from '@/lib/stores/cartStore'        // ADD THIS
+import CartIcon from '@/components/cart/CartIcon'            // ADD THIS
 
 interface Product {
   id: string
@@ -36,6 +38,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
   const [error, setError] = useState('')
+  const { addItem } = useCartStore()
 
   useEffect(() => {
     fetchProduct()
@@ -43,17 +46,23 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`/api/products/${resolvedParams.id}`)
+      // Check for category parameter in URL
+      const urlParams = new URLSearchParams(window.location.search)
+      const categoryParam = urlParams.get('category')
+      
+      let url = '/api/products'
+      if (categoryParam) {
+        url += `?category=${categoryParam}`
+        setSelectedCategory(categoryParam) // Pre-select the category filter
+      }
+      
+      const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
-        setProduct(data)
-        setQuantity(data.minOrderKg)
-      } else {
-        setError('Product not found')
+        setProducts(data)
       }
     } catch (error) {
-      console.error('Error fetching product:', error)
-      setError('Failed to load product')
+      console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
     }
@@ -97,14 +106,30 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
 
   const handleAddToCart = () => {
-    if (!session) {
-      router.push('/login')
-      return
-    }
-    
-    // TODO: Implement cart functionality
-    alert(`✨ Added ${quantity}kg of ${product?.name} to your cart!\n\n🛒 Total: ${formatPrice(getTotalPrice())}\n\n(Cart functionality coming soon!)`)
+  if (!session) {
+    router.push('/login')
+    return
   }
+  
+  if (!product) return
+  
+  addItem({
+    productId: product.id,
+    name: product.name,
+    price: product.price,
+    quantity: quantity,
+    imageUrl: product.imageUrl,
+    vendorName: product.vendorName,
+    minOrderKg: product.minOrderKg,
+    maxOrderKg: product.maxOrderKg,
+    city: product.city,
+    state: product.state
+  })
+  
+  // Show success message (you can replace this with a toast later)
+  console.log(`✨ Added ${quantity}kg of ${product.name} to cart!`)
+}
+    
 
   if (loading) {
     return (
@@ -288,6 +313,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             >
               ← Back to Collection
             </Link>
+            <CartIcon /> 
             {session && (
               <Link 
                 href="/dashboard"

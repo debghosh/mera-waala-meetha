@@ -115,19 +115,63 @@ export default function HomePage() {
                 <div>
                   <h2 className="text-3xl font-bold mb-6 text-gray-900">Browse Collection</h2>
                   <p className="text-lg text-gray-600 mb-8">Explore our curated collection of authentic sweets from verified artisans.</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mt-8">
                     {[
-                      { name: 'Bengali Classics', icon: '🍡', count: '85+ varieties' },
-                      { name: 'Gujarati Delights', icon: '🥮', count: '65+ varieties' },
-                      { name: 'Punjabi Specialties', icon: '🧈', count: '45+ varieties' },
-                      { name: 'South Indian', icon: '🥧', count: '55+ varieties' },
-                      { name: 'Festival Specials', icon: '🎉', count: '120+ varieties' },
-                      { name: 'Premium Collection', icon: '👑', count: '35+ varieties' },
+                      { name: 'Bengali Classics', icon: '🍡', count: '85+ varieties', category: 'MISHTI' },
+                      { name: 'Gujarati Delights', icon: '🥮', count: '65+ varieties', category: 'JALEBI' },
+                      { name: 'Punjabi Specialties', icon: '🧈', count: '45+ varieties', category: 'LADDU' },
+                      { name: 'South Indian', icon: '🥧', count: '55+ varieties', category: 'HALWA' },
+                      { name: 'Festival Specials', icon: '🎉', count: '120+ varieties', category: 'SEASONAL' },
+                      { name: 'Premium Collection', icon: '👑', count: '35+ varieties', category: 'BARFI' },
                     ].map((category, index) => (
-                      <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border-2 border-transparent hover:border-orange-500 transition-all duration-300 hover:scale-105 cursor-pointer">
-                        <div className="text-4xl mb-4 font-bold text-orange-500">{category.icon}</div>
-                        <h3 className="font-semibold text-lg mb-2 text-gray-900">{category.name}</h3>
-                        <p className="text-gray-600 text-sm">{category.count}</p>
+                      <div
+                        key={index}
+                        onClick={() => {
+                          // Navigate to products page with category filter
+                          window.location.href = `/products?category=${category.category}`;
+                        }}
+                        style={{
+                          backgroundColor: 'white',
+                          borderRadius: '1rem',
+                          padding: '1.5rem',
+                          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                          border: '2px solid transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          textAlign: 'center'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = '#ff6b35'
+                          e.currentTarget.style.transform = 'scale(1.05)'
+                          e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = 'transparent'
+                          e.currentTarget.style.transform = 'scale(1)'
+                          e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                        }}
+                      >
+                        <div style={{
+                          fontSize: '2.5rem',
+                          marginBottom: '1rem',
+                          filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.3))'
+                        }}>
+                          {category.icon}
+                        </div>
+                        <h3 style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          color: '#1f2937'
+                        }}>
+                          {category.name}
+                        </h3>
+                        <p style={{
+                          color: '#64748b',
+                          fontSize: '0.875rem'
+                        }}>
+                          {category.count}
+                        </p>
                       </div>
                     ))}
                   </div>
